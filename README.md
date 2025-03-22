@@ -1,4 +1,4 @@
-<div align="center">
+<!-- <div align="center">
     <h2 align="center" style="font-size: 45px; font-weight: bold;">
     <br>🚀 DiffuseKronA</br>
     <a href="https://diffusekrona.github.io/">Webpage</a> &nbsp;|&nbsp;
@@ -6,7 +6,17 @@
     <a href="https://www.youtube.com/watch?v=BLpPFKcPKNY">Video</a> &nbsp;|&nbsp;
     <a href="https://github.com/diffusekrona/Data">Dataset</a>
     </h2>
-</div>
+</div> -->
+
+<p align="center">
+    <h1 style="font-size: 50px; font-weight: bold; margin-bottom: 0">🚀 DiffuseKronA</h1>
+    <p style="font-size: 20px; margin-top: 0">
+        <a href="https://diffusekrona.github.io/">Webpage</a> &nbsp;|&nbsp;
+        <a href="https://openaccess.thecvf.com/content/WACV2025/papers/Marjit_DiffuseKronA_A_Parameter_Efficient_Fine-Tuning_Method_for_Personalized_Diffusion_Models_WACV_2025_paper.pdf">Paper</a> &nbsp;|&nbsp;
+        <a href="https://www.youtube.com/watch?v=BLpPFKcPKNY">Video</a> &nbsp;|&nbsp;
+        <a href="https://github.com/diffusekrona/Data">Dataset</a>
+    </p>
+</p>
 
 ## 💡 Highlight
 ✔️ Parameter Efficient: A minimum 35% reduction in parameters. By changing Kronecker factors, we can even achieve up to a 75% reduction with results comparable to LoRA-DreamBooth.<br/>
