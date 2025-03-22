@@ -9,7 +9,7 @@
 </div> -->
 <p align="center">
     <br>
-    <span align="center" style="font-size: 45px; font-weight: bold;">
+    <span align="center" style="font-size: 105px; font-weight: bold;">
     🚀 DiffuseKronA
     </span>
     <h1 align="center" style="font-size: 20px;">
