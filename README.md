@@ -1,58 +1,11 @@
 <!-- <div align="center">
-    <span style="font-size: 32px; font-weight: bold;">🚀 DiffuseKronA</span><br>
+    🚀 DiffuseKronA
     <span style="font-size: 20px; font-weight: bold;">
     <a href="https://diffusekrona.github.io/">Webpage</a> &nbsp;|&nbsp;
     <a href="https://openaccess.thecvf.com/content/WACV2025/papers/Marjit_DiffuseKronA_A_Parameter_Efficient_Fine-Tuning_Method_for_Personalized_Diffusion_Models_WACV_2025_paper.pdf">Paper</a> &nbsp;|&nbsp;
     <a href="https://www.youtube.com/watch?v=BLpPFKcPKNY">Video</a> &nbsp;|&nbsp;
     <a href="https://github.com/diffusekrona/Data">Dataset</a>
     </span>
-</div> -->
-<p align="center" style="font-size: 50px; font-weight: bold;">
-    🚀 DiffuseKronA
-    <!-- <h2 align="center" style="font-size: 50px; font-weight: bold;"> -->
-    <!-- <a style="font-size: 50px; font-weight: bold;">🚀 DiffuseKronA</a> -->
-    <!-- <br>🚀 DiffuseKronA</br>
-    <h1 align="center" style="font-size: 20px; font-weight: bold;">
-    <a href="https://diffusekrona.github.io/">Webpage</a> &nbsp;|&nbsp;
-    <a href="https://openaccess.thecvf.com/content/WACV2025/papers/Marjit_DiffuseKronA_A_Parameter_Efficient_Fine-Tuning_Method_for_Personalized_Diffusion_Models_WACV_2025_paper.pdf">Paper</a> &nbsp;|&nbsp;
-    <a href="https://www.youtube.com/watch?v=BLpPFKcPKNY">Video</a> &nbsp;|&nbsp;
-    <a href="https://github.com/diffusekrona/Data">Dataset</a>
-    </h1> -->
-    <!-- </h2> -->
-</p>
-
-<p align="center" style="font-size: 25px; font-weight: bold;">
-    <a href="https://diffusekrona.github.io/">Webpage</a> &nbsp;|&nbsp;
-    <a href="https://openaccess.thecvf.com/content/WACV2025/papers/Marjit_DiffuseKronA_A_Parameter_Efficient_Fine-Tuning_Method_for_Personalized_Diffusion_Models_WACV_2025_paper.pdf">Paper</a> &nbsp;|&nbsp;
-    <a href="https://www.youtube.com/watch?v=BLpPFKcPKNY">Video</a> &nbsp;|&nbsp;
-    <a href="https://github.com/diffusekrona/Data">Dataset</a>
-</p>
-<!-- <p align="center">
-    <a href="https://github.com/huggingface/diffusers/blob/main/LICENSE"><img alt="GitHub" src="https://img.shields.io/github/license/huggingface/datasets.svg?color=blue"></a>
-    <a href="https://github.com/huggingface/diffusers/releases"><img alt="GitHub release" src="https://img.shields.io/github/release/huggingface/diffusers.svg"></a>
-    <a href="https://pepy.tech/project/diffusers"><img alt="GitHub release" src="https://static.pepy.tech/badge/diffusers/month"></a>
-    <a href="CODE_OF_CONDUCT.md"><img alt="Contributor Covenant" src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg"></a>
-    <a href="https://twitter.com/diffuserslib"><img alt="X account" src="https://img.shields.io/twitter/url/https/twitter.com/diffuserslib.svg?style=social&label=Follow%20%40diffuserslib"></a>
-</p> -->
-
-<!-- <div align="center">
-  
-# 🚀 DiffuseKronA 
-[![Webpage](https://img.shields.io/badge/🌐-Webpage-blue)](https://diffusekrona.github.io/)
-[![Paper](https://img.shields.io/badge/📄-Paper-red)](https://openaccess.thecvf.com/content/WACV2025/papers/Marjit_DiffuseKronA_A_Parameter_Efficient_Fine-Tuning_Method_for_Personalized_Diffusion_Models_WACV_2025_paper.pdf)
-[![Video](https://img.shields.io/badge/🎥-Video-ff0000)](https://www.youtube.com/watch?v=BLpPFKcPKNY)
-[![Dataset](https://img.shields.io/badge/📁-Dataset-green)](https://github.com/diffusekrona/Data)
-
-</div> -->
-
-<!-- <div align="center">
-  
-**🚀 DiffuseKronA**  
-[![Webpage](https://img.shields.io/badge/🌐-Webpage-blue)](https://diffusekrona.github.io/)
-[![Paper](https://img.shields.io/badge/📄-Paper-red)](https://openaccess.thecvf.com/content/WACV2025/papers/Marjit_DiffuseKronA_A_Parameter_Efficient_Fine-Tuning_Method_for_Personalized_Diffusion_Models_WACV_2025_paper.pdf)
-[![Video](https://img.shields.io/badge/🎥-Video-ff0000)](https://www.youtube.com/watch?v=BLpPFKcPKNY)
-[![Dataset](https://img.shields.io/badge/📁-Dataset-green)](https://github.com/diffusekrona/Data)
-
 </div> -->
 
 ## 💡 Highlight
@@ -133,6 +86,6 @@ If you think this project is helpful, please feel free to leave a star⭐️ and
     pages     = {3529-3538}
 }
 ```
-## ☎️ Contact
+## ✉️ Contact
 
 Shyam Marjit: marjitshyam@gmail.com or shyam.marjit@iiitg.ac.in
