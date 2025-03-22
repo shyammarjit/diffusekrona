@@ -9,7 +9,14 @@
 ✔️ Text Alignment and Fidelity: On average, DiffusekronA captures better subject semantics and large contextual prompts.<br/>
 ✔️ Interpretability: Leverages the advantages of the Kronecker product to capture structured relationships in attention-weight matrices. More controllable decomposition makes DiffusekronA more interpretable.<br/>
 
-<video width="1190" height="438" controls><source src="/assets/diffusekrona.mp4" type="video/mp4">
+<!-- <video width="1190" height="438" controls><source src="/assets/diffusekrona.mp4" type="video/mp4"> -->
+
+<br>
+<div class="gif">
+<p align="center">
+<img src='assets/diffusekrona.gif' align="center" width=800>
+</p>
+</div>
 
 ## 🛠️ Installation Steps
 
