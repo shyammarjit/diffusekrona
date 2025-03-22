@@ -8,16 +8,13 @@
     </span>
 </div> -->
 <p align="center">
-    <br>
-    <span align="center" style="font-size: 105px; font-weight: bold;">
-    🚀 DiffuseKronA
-    </span>
-    <h1 align="center" style="font-size: 20px;">
+    <h2 align="center" style="font-size: 45px; font-weight: bold;">
+    <br>🚀 DiffuseKronA</br>
     <a href="https://diffusekrona.github.io/">Webpage</a> &nbsp;|&nbsp;
     <a href="https://openaccess.thecvf.com/content/WACV2025/papers/Marjit_DiffuseKronA_A_Parameter_Efficient_Fine-Tuning_Method_for_Personalized_Diffusion_Models_WACV_2025_paper.pdf">Paper</a> &nbsp;|&nbsp;
     <a href="https://www.youtube.com/watch?v=BLpPFKcPKNY">Video</a> &nbsp;|&nbsp;
-    <a href="https://github.com/diffusekrona/Data">Dataset</a> </h1>
-    <br>
+    <a href="https://github.com/diffusekrona/Data">Dataset</a>
+    </h2>
 </p>
 <!-- <p align="center">
     <a href="https://github.com/huggingface/diffusers/blob/main/LICENSE"><img alt="GitHub" src="https://img.shields.io/github/license/huggingface/datasets.svg?color=blue"></a>
