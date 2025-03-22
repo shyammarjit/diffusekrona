@@ -9,18 +9,23 @@
 </div> -->
 <p align="center">
     <br>
-    <h2 align="center" style="font-size: 32px; font-weight: bold;">
+    <span align="center" style="font-size: 45px; font-weight: bold;">
     🚀 DiffuseKronA
-    </h2>
+    </span>
+    <h1 align="center" style="font-size: 20px;">
+    <a href="https://diffusekrona.github.io/">Webpage</a> &nbsp;|&nbsp;
+    <a href="https://openaccess.thecvf.com/content/WACV2025/papers/Marjit_DiffuseKronA_A_Parameter_Efficient_Fine-Tuning_Method_for_Personalized_Diffusion_Models_WACV_2025_paper.pdf">Paper</a> &nbsp;|&nbsp;
+    <a href="https://www.youtube.com/watch?v=BLpPFKcPKNY">Video</a> &nbsp;|&nbsp;
+    <a href="https://github.com/diffusekrona/Data">Dataset</a> </h1>
     <br>
 </p>
-<p align="center">
+<!-- <p align="center">
     <a href="https://github.com/huggingface/diffusers/blob/main/LICENSE"><img alt="GitHub" src="https://img.shields.io/github/license/huggingface/datasets.svg?color=blue"></a>
     <a href="https://github.com/huggingface/diffusers/releases"><img alt="GitHub release" src="https://img.shields.io/github/release/huggingface/diffusers.svg"></a>
     <a href="https://pepy.tech/project/diffusers"><img alt="GitHub release" src="https://static.pepy.tech/badge/diffusers/month"></a>
     <a href="CODE_OF_CONDUCT.md"><img alt="Contributor Covenant" src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg"></a>
     <a href="https://twitter.com/diffuserslib"><img alt="X account" src="https://img.shields.io/twitter/url/https/twitter.com/diffuserslib.svg?style=social&label=Follow%20%40diffuserslib"></a>
-</p>
+</p> -->
 
 <!-- <div align="center">
   
