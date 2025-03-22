@@ -1,9 +1,9 @@
 <div align="center">
-    <span style="font-size: 32px; font-weight: bold;">🚀 DiffuseKronA</span> &nbsp; </br>
-    <span style="font-size: 20px; font-weight: bold;"> <a href="https://diffusekrona.github.io/">Webpage</a> | 
-    <a href="https://openaccess.thecvf.com/content/WACV2025/papers/Marjit_DiffuseKronA_A_Parameter_Efficient_Fine-Tuning_Method_for_Personalized_Diffusion_Models_WACV_2025_paper.pdf">Paper</a> | 
-    <a href="https://www.youtube.com/watch?v=BLpPFKcPKNY">Video</a> | 
-    <a href="https://github.com/diffusekrona/Data">Dataset</a></span> &nbsp; </br>
+
+# 🚀 DiffuseKronA  
+  
+## [Webpage](https://diffusekrona.github.io/) | [Paper](https://openaccess.thecvf.com/content/WACV2025/papers/Marjit_DiffuseKronA_A_Parameter_Efficient_Fine-Tuning_Method_for_Personalized_Diffusion_Models_WACV_2025_paper.pdf) | [Video](https://www.youtube.com/watch?v=BLpPFKcPKNY) | [Dataset](https://github.com/diffusekrona/Data)
+
 </div>
 
 
