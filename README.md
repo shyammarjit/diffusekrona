@@ -24,10 +24,7 @@
 <div align="center">
 
 ## 🚀 DiffuseKronA <br> [Webpage](https://diffusekrona.github.io/) | [Paper](https://example.com/paper) | [Video](https://youtube.com) | [Dataset](https://github.com/data)<br> <p align="left">💡 Highlight</p>
-
 </div>
-
-<!-- ##  -->
 ✔️ Parameter Efficient: A minimum 35% reduction in parameters. By changing Kronecker factors, we can even achieve up to a 75% reduction with results comparable to LoRA-DreamBooth.<br/>
 ✔️ Enhanced Stability: Our method is more stable compared to LoRA-DreamBooth. Stability refers to variations in images generated across different learning rates and Kronecker factor/ranks, which makes LoRA-DreamBooth harder to fine-tune.<br/>
 ✔️ Text Alignment and Fidelity: On average, DiffusekronA captures better subject semantics and large contextual prompts.<br/>
