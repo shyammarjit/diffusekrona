@@ -7,7 +7,7 @@
 ✔️ Text Alignment and Fidelity: On average, DiffusekronA captures better subject semantics and large contextual prompts.<br/>
 ✔️ Interpretability: Leverages the advantages of the Kronecker product to capture structured relationships in attention-weight matrices. More controllable decomposition makes DiffusekronA more interpretable.<br/>
 
-## 🔥 Method Details
+## ⭐ Method Details
 Overview of DiffuseKronA:</br>
 ✨ Fine-tuning process involves optimizing the multi-head attention parameters (Q, K, V , and O) using Kronecker Adapter, elaborated in the subsequent blocks. </br>
 ✨ During inference, newly trained parameters, denoted as θ, are integrated with the original weights Dϕ and images are synthesized using the updated personalized model D<sub>ϕ+θ</sub>.</br>
@@ -24,39 +24,41 @@ the advantages of the proposed method.
 ## 🛠️ Installation Steps
 
 1. Create conda environment
-```
+```python
 conda create -y -n diffusekrona python=3.11
 conda activate diffusekrona
 ```
 
 2. Package Installations
-```
-pip install -e ".[torch]" # To install HuggingFace Diffusers library
-pip install -r requirements.txt # To install extra requirements
+```python
+pip install -e ".[torch]"           # To install HuggingFace Diffusers library
+pip install -r requirements.txt     # To install extra requirements
 pip install accelerator
 ```
 
 3. Install CLIP
-```
+```python
 pip install git+https://github.com/openai/CLIP.git
 ```
-Please RUN `conda install --yes -c pytorch pytorch=1.7.1 torchvision cudatoolkit=11.0`, only when pip fails to install CLIP.
 
+## 🔥 Quickstart
+1. Clone the Datasets and remove the *subject/generated subfolders
+```python
+git clone https://github.com/diffusekrona/data && rm -rf data/.git
+mkdir results
+cd diffusekrona/
+python format_datasets.py
+```
 
-## 🛠️ Quickstart
-1. Clone the Datasets
+2. Finetune diffusekrona (leberaing sdxl model) using script file
+```python
+cd diffusekrona/                # RUN inside diffusekrona folder
+bash diffusekrona_sdxl.sh       # RUN when you have single GPU
 ```
-git clone 
-```
-
-Finetune diffusekrona (leberaing sdxl model) using script file
-```
-cd diffusekrona/                                        # Run inside diffusekrona folder
-bash run_lora_sdxl.sh                                   # when only one GPU
-```
+If you have multiple GPUs then please run `CUDA_VISIBLE_DEVICES=$GPU_ID bash diffusekrona_sdxl.sh`. 
 
 Generate images from the finetuned weights 
-```
+```python
 python generator.py
 ```
 

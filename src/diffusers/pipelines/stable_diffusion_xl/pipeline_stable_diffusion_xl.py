@@ -932,11 +932,6 @@ class StableDiffusionXLPipeline(DiffusionPipeline, FromSingleFileMixin, LoraLoad
         state_dict.update(pack_weights(unet_lora_layers, "unet"))
 
         if text_encoder_lora_layers and text_encoder_2_lora_layers:
-            # print(pack_weights(text_encoder_lora_layers, "text_encoder").keys())
-            # # exit()
-            # print("shyam")
-            # print(pack_weights(text_encoder_2_lora_layers, "text_encoder_2").keys())
-            # exit()
             state_dict.update(pack_weights(text_encoder_lora_layers, "text_encoder"))
             state_dict.update(pack_weights(text_encoder_2_lora_layers, "text_encoder_2"))
 

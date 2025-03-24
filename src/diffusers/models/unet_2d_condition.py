@@ -553,9 +553,6 @@ class UNet2DConditionModel(ModelMixin, ConfigMixin, UNet2DConditionLoadersMixin)
                 resnet_out_scale_factor=resnet_out_scale_factor,
                 cross_attention_norm=cross_attention_norm,
                 attention_head_dim=attention_head_dim[i] if attention_head_dim[i] is not None else output_channel,
-                # adapter_type=adapter_type, # added
-                # adapter_low_rank=adapter_low_rank, # added
-                # tune_mlp=tune_mlp, # added
             )
             self.up_blocks.append(up_block)
             prev_output_channel = output_channel
@@ -599,9 +596,6 @@ class UNet2DConditionModel(ModelMixin, ConfigMixin, UNet2DConditionLoadersMixin)
 
         def fn_recursive_add_processors(name: str, module: torch.nn.Module, processors: Dict[str, AttentionProcessor]):
             if hasattr(module, "set_processor"):
-                # print(name, module)
-                # print(module.processor)
-                # exit()
                 processors[f"{name}.processor"] = module.processor
 
             for sub_name, child in module.named_children():
@@ -672,8 +666,6 @@ class UNet2DConditionModel(ModelMixin, ConfigMixin, UNet2DConditionLoadersMixin)
                         module.set_lora_layer(lora_layer=LoRALinearLayer(args[0], args[1], rank = lora_mlp_rank)) 
                     elif adapter_type == "krona":
                         from .lora import KronALinearLayer
-                        # lora_mlp_rank is a tuple here 
-                        # print(lora_mlp_rank)
                         module.set_lora_layer(lora_layer=KronALinearLayer(args[0], args[1], rank = lora_mlp_rank)) 
                     else:
                         raise AttributeError("Wrong adapter type")
@@ -704,7 +696,6 @@ class UNet2DConditionModel(ModelMixin, ConfigMixin, UNet2DConditionLoadersMixin)
                 processor. This is strongly recommended when setting trainable attention processors.
 
         """
-        # print("shyam is back"); exit()
         count = len(self.attn_processors.keys())
 
         if isinstance(processor, dict) and len(processor) != count:
@@ -724,7 +715,6 @@ class UNet2DConditionModel(ModelMixin, ConfigMixin, UNet2DConditionLoadersMixin)
                 fn_recursive_attn_processor(f"{name}.{sub_name}", child, processor)
 
         for name, module in self.named_children():
-            # print(name, module)
             fn_recursive_attn_processor(name, module, processor)
 
     def set_default_attn_processor(self):

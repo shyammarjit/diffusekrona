@@ -22,10 +22,7 @@ from ..utils.import_utils import is_xformers_available
 from .lora import LoRALinearLayer, KronALinearLayer
 from .slice_lora import SliceLoRALinearLayer
 """ Current krona is the clice LoRA version. It's not official KronA codebase """
-
-
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
-
 
 if is_xformers_available():
     import xformers
@@ -307,7 +304,6 @@ class Attention(nn.Module):
     def set_processor(self, processor: "AttnProcessor"):
         # if current processor is in `self._modules` and if passed `processor` is not, we need to
         # pop `processor` from `self._modules`
-        # print("shyam ====> set_processor")
         if (
             hasattr(self, " ")
             and isinstance(self.processor, torch.nn.Module)
@@ -735,7 +731,6 @@ class AttnAddedKVProcessor:
     """
 
     def __call__(self, attn: Attention, hidden_states, encoder_hidden_states=None, attention_mask=None):
-        print("AttnAddedKVProcessor2_0"); exit()
         residual = hidden_states
         hidden_states = hidden_states.view(hidden_states.shape[0], hidden_states.shape[1], -1).transpose(1, 2)
         batch_size, sequence_length, _ = hidden_states.shape
@@ -796,7 +791,6 @@ class AttnAddedKVProcessor2_0:
             )
 
     def __call__(self, attn: Attention, hidden_states, encoder_hidden_states=None, attention_mask=None):
-        print("AttnAddedKVProcessor2_0"); exit()
         residual = hidden_states
         hidden_states = hidden_states.view(hidden_states.shape[0], hidden_states.shape[1], -1).transpose(1, 2)
         batch_size, sequence_length, _ = hidden_states.shape
@@ -946,7 +940,6 @@ class XFormersAttnAddedKVProcessor:
         self.attention_op = attention_op
 
     def __call__(self, attn: Attention, hidden_states, encoder_hidden_states=None, attention_mask=None):
-        print("XFormersAttnAddedKVProcessor"); exit()
         residual = hidden_states
         hidden_states = hidden_states.view(hidden_states.shape[0], hidden_states.shape[1], -1).transpose(1, 2)
         batch_size, sequence_length, _ = hidden_states.shape
@@ -1010,7 +1003,6 @@ class XFormersAttnProcessor:
 
     def __init__(self, attention_op: Optional[Callable] = None):
         self.attention_op = attention_op
-        # print(kamal); exit()
 
     def __call__(
         self,
@@ -1020,7 +1012,6 @@ class XFormersAttnProcessor:
         attention_mask: Optional[torch.FloatTensor] = None,
         temb: Optional[torch.FloatTensor] = None,
     ):
-        print("XFormersAttnProcessor"); exit()
         residual = hidden_states
 
         if attn.spatial_norm is not None:
@@ -1201,7 +1192,6 @@ class LoRAXFormersAttnProcessor(nn.Module):
         **kwargs,
     ):
         super().__init__()
-        print("LoRAXFormersAttnProcessor"); exit()
 
         self.hidden_size = hidden_size
         self.cross_attention_dim = cross_attention_dim
@@ -1231,7 +1221,6 @@ class LoRAXFormersAttnProcessor(nn.Module):
     def __call__(
         self, attn: Attention, hidden_states, encoder_hidden_states=None, attention_mask=None, scale=1.0, temb=None
     ):
-        print("LoRAXFormersAttnProcessor not suported."); exit()
         residual = hidden_states
 
         if attn.spatial_norm is not None:

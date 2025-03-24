@@ -49,25 +49,16 @@ class KronALinearLayer(nn.Module):
 
         nn.init.normal_(self.down.weight, std=1 / rank[0])
         nn.init.zeros_(self.up.weight)
-        # nn.init.normal_(self.down, std=1 / rank[0])
-        # nn.init.zeros_(self.up)
 
     def forward(self, hidden_states):
         orig_dtype = hidden_states.dtype
         dtype = self.down.weight.dtype
-        # dtype = self.down.dtype
-        
-        
-        # print(self.a1, self.a2, self.b1, self.b2)
-        # exit()
+
         if len(hidden_states.shape) == 3:
             B1, C, D = hidden_states.size() # get the matrix shape
             hidden_states = hidden_states.view(-1, self.b2, self.a2).contiguous().view(-1, self.a2, self.b2).transpose(1, 2)
             
             up_hidden_states = self.up.weight@(hidden_states.to(dtype)@self.down.weight)
-            # up_hidden_states = @(hidden_states.to(dtype)@self.down)
-            # up_hidden_states = torch.matmul(self.up, torch.matmul(hidden_states.to(dtype), self.down))
-            
             up_hidden_states = up_hidden_states.view(B1, C, self.a1*self.b1)
 
         else: 
@@ -77,12 +68,6 @@ class KronALinearLayer(nn.Module):
             up_hidden_states = self.up.weight@(self.down(hidden_states.to(dtype)))
             up_hidden_states = up_hidden_states.view(B1, self.b1 * self.a1)
 
-        # exit()
-        """new"""
-        # hidden_states_reshape = hidden_states.view(self.b2, self.a2).contiguous().view(self.a2, self.b2).t()
-        # down_hidden_states = self.down(hidden_states_reshape.to(dtype))
-        # up_hidden_states = self.up(down_hidden_states)
-
         if self.network_alpha is not None:
             up_hidden_states *= self.network_alpha / self.rank
 
@@ -91,8 +76,6 @@ class KronALinearLayer(nn.Module):
 class LoRALinearLayer(nn.Module):
     def __init__(self, in_features, out_features, rank=4, network_alpha=None, device=None, dtype=None, lphm=None):
         super().__init__()
-        # print(kamal)
-        # exit()
         self.lphm = lphm
         # This value has the same meaning as the `--network_alpha` option in the kohya-ss trainer script.
         # See https://github.com/darkstorm2150/sd-scripts/blob/main/docs/train_network_README-en.md#execute-learning
@@ -101,24 +84,17 @@ class LoRALinearLayer(nn.Module):
 
         
         if lphm:
-            # self.down_in = nn.Parameter(torch.FloatTensor(in_features, 1).to(dtype).to(device), requires_grad=True)
             self.down_in = nn.Linear(1, in_features, bias=False, device=device, dtype=dtype)
-            # self.down_out = nn.Parameter(torch.FloatTensor(1, rank).to(dtype).to(device), requires_grad=True)
             self.down_out = nn.Linear(rank, 1, bias=False, device=device, dtype=dtype)
 
-            # self.up_in = nn.Parameter(torch.FloatTensor(rank, 1).to(dtype).to(device), requires_grad=True)
             self.up_in = nn.Linear(1, rank, bias=False, device=device, dtype=dtype)
-            # self.up_out = nn.Parameter(torch.FloatTensor(1, out_features).to(dtype).to(device), requires_grad=True)
             self.up_out = nn.Linear(out_features, 1, bias=False, device=device, dtype=dtype)
 
             nn.init.normal_(self.down_in.weight, std=1 / rank)
             nn.init.normal_(self.down_out.weight, std=1 / rank)
             nn.init.zeros_(self.up_in.weight)
             nn.init.zeros_(self.up_out.weight)
-            # self.down = torch.kron(self.down_in.weight, self.down_out.weight)#.to(dtype).to(device)
-            # self.up = torch.kron(self.up_in.weight, self.up_out.weight)#.to(dtype).to(device)
-            
-        else: 
+        else:
             self.down = nn.Linear(in_features, rank, bias=False, device=device, dtype=dtype)
             self.up = nn.Linear(rank, out_features, bias=False, device=device, dtype=dtype)
             
@@ -129,18 +105,13 @@ class LoRALinearLayer(nn.Module):
         
 
     def forward(self, hidden_states):
-        # print('in')
-        # print(self.down_in.weight.device)
-        # exit()
         orig_dtype = hidden_states.dtype
 
         if self.lphm:
             dtype = self.down_in.weight.dtype
             device = self.down_in.weight.device
-            # print(hidden_states.shape, self.down.shape)
-            # exit()
-            self.down = torch.kron(self.down_in.weight, self.down_out.weight)#.to(dtype).to(device)
-            self.up = torch.kron(self.up_in.weight, self.up_out.weight)#.to(dtype).to(device)
+            self.down = torch.kron(self.down_in.weight, self.down_out.weight)
+            self.up = torch.kron(self.up_in.weight, self.up_out.weight)
             down_hidden_states = hidden_states.to(dtype)@self.down.to(device)
             up_hidden_states = down_hidden_states@self.up.to(device)
         else:
@@ -199,7 +170,6 @@ class LoRACompatibleConv(nn.Conv2d):
         self.lora_layer = lora_layer
 
     def forward(self, x):
-        """It's None."""
         if self.lora_layer is None:
             # make sure to the functional Conv2D function as otherwise torch.compile's graph will break
             # see: https://github.com/huggingface/diffusers/pull/4315
@@ -215,8 +185,6 @@ class LoRACompatibleLinear(nn.Linear):
 
     def __init__(self, *args, lora_layer: Optional[LoRALinearLayer] = None, adapter_low_rank=None, **kwargs):
         super().__init__(*args, **kwargs)
-        # print('shyam', args, kwargs)
-        # print(kamal)
         self.lora_layer = lora_layer
         self.args = args
         self.kwargs = kwargs

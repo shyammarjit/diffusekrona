@@ -55,15 +55,10 @@ from diffusers.models.attention_processor import LoRAAttnProcessor, LoRAAttnProc
 from diffusers.optimization import get_scheduler
 from diffusers.utils import check_min_version, is_wandb_available
 from diffusers.utils.import_utils import is_xformers_available
-from prompts import instance_prompt
-from diffusers.models.lora import LoRALinearLayer
-from logger import setup_logger
 
 # Will error if the minimal version of diffusers is not installed. Remove at your own risks.
 check_min_version("0.21.0.dev0")
-
 logger = get_logger(__name__)
-
 
 def save_model_card(
     repo_id: str, images=None, base_model=str, train_text_encoder=False, prompt=str, repo_folder=None, vae_path=None
@@ -740,7 +735,6 @@ def parse_args(input_args=None):
     else: args = parser.parse_args()
     
     # our edit
-    args.instance_prompt = instance_prompt(os.path.basename(args.instance_data_dir))
     if args.with_prior_preservation:
         args.class_prompt = 'a '+ args.instance_prompt.split(',')[1]
     args.output_dir = struct_output(args) # structure the output folder
@@ -879,7 +873,6 @@ def tokenize_prompt(tokenizer, prompt):
 # Adapted from pipelines.StableDiffusionXLPipeline.encode_prompt
 def encode_prompt(text_encoders, tokenizers, prompt, text_input_ids_list=None, adapter_type=None):
     prompt_embeds_list = []
-    # print("\n\nshyam_text\n\n")
     for i, text_encoder in enumerate(text_encoders):
         if tokenizers is not None:
             tokenizer = tokenizers[i]
@@ -1109,7 +1102,6 @@ def main(args):
     # Set correct lora layers
     unet_lora_attn_procs = {}
     unet_lora_parameters = []
-    # if(args.tune_mlp): ffn_layers = []
     for name, attn_processor in unet.attn_processors.items():
         cross_attention_dim = None if name.endswith("attn1.processor") else unet.config.cross_attention_dim
         if name.startswith("mid_block"):
@@ -1130,30 +1122,29 @@ def main(args):
             module = lora_attn_processor_class(
                 hidden_size=hidden_size, 
                 cross_attention_dim=cross_attention_dim, 
-                adapter_type=args.adapter_type, # added 
-                attn_update_unet=args.attn_update_unet, # added 
+                adapter_type=args.adapter_type, 
+                attn_update_unet=args.attn_update_unet, 
                 k_rank=args.unet_lora_rank_k if "k" in args.attn_update_unet else None, # k rank
-                q_rank=args.unet_lora_rank_q if "q" in args.attn_update_unet else None, # added 
-                v_rank=args.unet_lora_rank_v if "v" in args.attn_update_unet else None, # added 
-                out_rank=args.unet_lora_rank_out if "o" in args.attn_update_unet else None, # added 
+                q_rank=args.unet_lora_rank_q if "q" in args.attn_update_unet else None, 
+                v_rank=args.unet_lora_rank_v if "v" in args.attn_update_unet else None, 
+                out_rank=args.unet_lora_rank_out if "o" in args.attn_update_unet else None, 
             )
         elif(args.adapter_type=="krona"):
             module = lora_attn_processor_class(
                 hidden_size=hidden_size, 
                 cross_attention_dim=cross_attention_dim, 
-                adapter_type=args.adapter_type, # added 
-                attn_update_unet=args.attn_update_unet, # added 
+                adapter_type=args.adapter_type, 
+                attn_update_unet=args.attn_update_unet, 
                 k_rank=(args.krona_unet_k_rank_a1, args.krona_unet_k_rank_a2) if "k" in args.attn_update_unet else None, # k rank
-                q_rank=(args.krona_unet_q_rank_a1, args.krona_unet_q_rank_a2) if "q" in args.attn_update_unet else None, # added 
-                v_rank=(args.krona_unet_v_rank_a1, args.krona_unet_v_rank_a2) if "v" in args.attn_update_unet else None, # added 
-                out_rank=(args.krona_unet_o_rank_a1, args.krona_unet_o_rank_a2) if "o" in args.attn_update_unet else None, # added 
+                q_rank=(args.krona_unet_q_rank_a1, args.krona_unet_q_rank_a2) if "q" in args.attn_update_unet else None, 
+                v_rank=(args.krona_unet_v_rank_a1, args.krona_unet_v_rank_a2) if "v" in args.attn_update_unet else None, 
+                out_rank=(args.krona_unet_o_rank_a1, args.krona_unet_o_rank_a2) if "o" in args.attn_update_unet else None, 
             )
         else:
             raise AttributeError(f"{args.adapter_type} is not supported.")
         
         unet_lora_attn_procs[name] = module
         unet_lora_parameters.extend(module.parameters())
-        # if(args.tune_mlp): ffn_layers.append(name)
         
     unet.set_attn_processor(unet_lora_attn_procs)
     if(args.unet_tune_mlp): 
@@ -1170,37 +1161,24 @@ def main(args):
     # So, instead, we monkey-patch the forward calls of its attention-blocks.
     if args.train_text_encoder:
         # ensure that dtype is float32, even if rest of the model that isn't trained is loaded in fp16
-        # print(text_encoder_one)
-        # exit()
         text_lora_parameters_one = LoraLoaderMixin._modify_text_encoder(
             text_encoder_one, dtype=torch.float32, adapter_type=args.adapter_type, attn_update_text=args.attn_update_text,
-            rank_k=(args.krona_text_k_rank_a1, args.krona_text_k_rank_a2) if "k" in args.attn_update_text else None, # added 
-            rank_q=(args.krona_text_q_rank_a1, args.krona_text_q_rank_a2) if "q" in args.attn_update_text else None, # added
-            rank_v=(args.krona_text_v_rank_a1, args.krona_text_v_rank_a2) if "v" in args.attn_update_text else None, # added 
-            rank_o=(args.krona_text_o_rank_a1, args.krona_text_o_rank_a2) if "o" in args.attn_update_text else None, # added
-            # rank_mlp=args.text_lora_rank_mlp if args.text_tune_mlp else None, # added
+            rank_k=(args.krona_text_k_rank_a1, args.krona_text_k_rank_a2) if "k" in args.attn_update_text else None, 
+            rank_q=(args.krona_text_q_rank_a1, args.krona_text_q_rank_a2) if "q" in args.attn_update_text else None,
+            rank_v=(args.krona_text_v_rank_a1, args.krona_text_v_rank_a2) if "v" in args.attn_update_text else None, 
+            rank_o=(args.krona_text_o_rank_a1, args.krona_text_o_rank_a2) if "o" in args.attn_update_text else None,
+            # rank_mlp=args.text_lora_rank_mlp if args.text_tune_mlp else None,
             # patch_mlp=args.text_tune_mlp,
         )
         text_lora_parameters_two = LoraLoaderMixin._modify_text_encoder(
             text_encoder_two, dtype=torch.float32, adapter_type=args.adapter_type, attn_update_text=args.attn_update_text,
-            rank_k=(args.krona_text_k_rank_a1, args.krona_text_k_rank_a2) if "k" in args.attn_update_text else None, # added 
-            rank_q=(args.krona_text_q_rank_a1, args.krona_text_q_rank_a2) if "q" in args.attn_update_text else None, # added
-            rank_v=(args.krona_text_v_rank_a1, args.krona_text_v_rank_a2) if "v" in args.attn_update_text else None, # added 
-            rank_o=(args.krona_text_o_rank_a1, args.krona_text_o_rank_a2) if "o" in args.attn_update_text else None, # added
-            # rank_mlp=args.text_lora_rank_mlp if args.text_tune_mlp else None, # added
+            rank_k=(args.krona_text_k_rank_a1, args.krona_text_k_rank_a2) if "k" in args.attn_update_text else None, 
+            rank_q=(args.krona_text_q_rank_a1, args.krona_text_q_rank_a2) if "q" in args.attn_update_text else None,
+            rank_v=(args.krona_text_v_rank_a1, args.krona_text_v_rank_a2) if "v" in args.attn_update_text else None, 
+            rank_o=(args.krona_text_o_rank_a1, args.krona_text_o_rank_a2) if "o" in args.attn_update_text else None,
+            # rank_mlp=args.text_lora_rank_mlp if args.text_tune_mlp else None,
             # patch_mlp=args.text_tune_mlp,
         )
-        
-        # print(text_lora_parameters_one)
-        # # print(text_lora_parameters_two)
-        # exit()
-        # print(text_encoder_one)
-        
-        # To tune text encoder ffn/mlp layers 
-        # text_lora_layers_ffn = text_encoder_lora_state_dict(text_encoder_one, attn_update_text=args.attn_update_text, 
-        #                                                         text_tune_mlp=args.text_tune_mlp)
-        # print(text_lora_layers_ffn[list(text_lora_layers_ffn.keys())[0]])
-        # exit()
 
     # create custom saving & loading hooks so that `accelerator.save_state(...)` serializes in a nice format
     def save_model_hook(models, weights, output_dir):
@@ -1215,7 +1193,7 @@ def main(args):
                 unet_lora_layers_to_save = unet_attn_processors_state_dict(model)
                 if(args.unet_tune_mlp):
                     unet_lora_layers_to_save_ffn = unet_ffn_within_attn_processors_state_dict(unet)
-                    unet_lora_layers_to_save.update(unet_lora_layers_to_save_ffn) # added 
+                    unet_lora_layers_to_save.update(unet_lora_layers_to_save_ffn) 
             elif isinstance(model, type(accelerator.unwrap_model(text_encoder_one))):
                 text_encoder_one_lora_layers_to_save = text_encoder_lora_state_dict(model,
                     attn_update_text=args.attn_update_text,
@@ -1258,20 +1236,20 @@ def main(args):
 
         lora_state_dict, network_alphas = LoraLoaderMixin.lora_state_dict(input_dir)
         LoraLoaderMixin.load_lora_into_unet(lora_state_dict, network_alphas=network_alphas, unet=unet_,
-            adapter_type=args.adapter_type, # Added
-            attn_update_unet=args.attn_update_unet, # Added
+            adapter_type=args.adapter_type,
+            attn_update_unet=args.attn_update_unet,
         )
         text_encoder_state_dict = {k: v for k, v in lora_state_dict.items() if "text_encoder." in k}
         LoraLoaderMixin.load_lora_into_text_encoder(
             text_encoder_state_dict, network_alphas=network_alphas, text_encoder=text_encoder_one_,
-            adapter_type=args.adapter_type, # Added
-            attn_update_text=args.attn_update_text, # Added
+            adapter_type=args.adapter_type,
+            attn_update_text=args.attn_update_text,
         )
         text_encoder_2_state_dict = {k: v for k, v in lora_state_dict.items() if "text_encoder_2." in k}
         LoraLoaderMixin.load_lora_into_text_encoder(
             text_encoder_2_state_dict, network_alphas=network_alphas, text_encoder=text_encoder_two_,
-            adapter_type=args.adapter_type, # Added
-            attn_update_text=args.attn_update_text, # Added
+            adapter_type=args.adapter_type,
+            attn_update_text=args.attn_update_text,
         )
 
     accelerator.register_save_state_pre_hook(save_model_hook)
@@ -1463,7 +1441,6 @@ def main(args):
     # We need to initialize the trackers we use, and also store our configuration.
     # The trackers initializes automatically on the main process.
     if accelerator.is_main_process: accelerator.init_trackers("dreambooth-lora-sd-xl", config=vars(args))
-    # Train!
     total_batch_size = args.train_batch_size * accelerator.num_processes * args.gradient_accumulation_steps
 
     logger.info("***** Running training *****")
@@ -1478,12 +1455,12 @@ def main(args):
     first_epoch = 0
     
     # count numbr of parameters
-    num_params = sum(p.numel() for p in unet.parameters() if p.requires_grad) # Added
-    if(args.train_text_encoder): # Added
-        num_params_t1 = sum(p.numel() for p in text_encoder_one.parameters() if p.requires_grad) # Added
-        num_params_t2 = sum(p.numel() for p in text_encoder_two.parameters() if p.requires_grad) # Added
-        num_params_text = num_params_t1 + num_params_t2 # Added
-    else: num_params_text = 0 # Added
+    num_params = sum(p.numel() for p in unet.parameters() if p.requires_grad)
+    if(args.train_text_encoder):
+        num_params_t1 = sum(p.numel() for p in text_encoder_one.parameters() if p.requires_grad)
+        num_params_t2 = sum(p.numel() for p in text_encoder_two.parameters() if p.requires_grad)
+        num_params_text = num_params_t1 + num_params_t2
+    else: num_params_text = 0
 
     logger.info(f"  Total learnable parameters: {num_params + num_params_text}\n") # number of parameters
 
@@ -1516,29 +1493,16 @@ def main(args):
     progress_bar = tqdm(range(global_step, args.max_train_steps), disable=not accelerator.is_local_main_process)
     progress_bar.set_description("Steps")
 
-    
-    # print(first_epoch, args.num_train_epochs)
-    # prev_shyam = text_lora_parameters_two[0]
     for epoch in range(first_epoch, args.num_train_epochs):
-        # print(epoch)
-        # unet_lora_layers_ffn = unet_ffn_within_attn_processors_state_dict(unet)
-        # print(unet_lora_layers_ffn[list(unet_lora_layers_ffn.keys())[0]])
-        # temp = unet_attn_processors_state_dict(unet)
-        # print(temp[list(temp.keys())[0]])
-        # text_lora_layers_ffn = text_encoder_lora_state_dict(text_encoder_one, attn_update_text=args.attn_update_text, 
-        #                                                     text_tune_mlp=args.text_tune_mlp)
-        # print(text_lora_layers_ffn[list(text_lora_layers_ffn.keys())[0]])
-        # temp = unet_attn_processors_state_dict(unet)
-        # print(temp[list(temp.keys())[0]])
-        
+        # Fine-tuning the unet only
         unet.train()
         if args.train_text_encoder:
             text_encoder_one.train()
             text_encoder_two.train()
             
             # set top parameter requires_grad = True for gradient checkpointing works
-            text_encoder_one.text_model.embeddings.requires_grad_(True) # Added
-            text_encoder_two.text_model.embeddings.requires_grad_(True) # Added
+            text_encoder_one.text_model.embeddings.requires_grad_(True)
+            text_encoder_two.text_model.embeddings.requires_grad_(True)
             
         for step, batch in enumerate(train_dataloader):
             # Skip steps until we reach the resumed step
@@ -1586,9 +1550,7 @@ def main(args):
                         added_cond_kwargs=unet_added_conditions,
                     ).sample
                 else:
-                    # print("training text encoder")
                     unet_added_conditions = {"time_ids": add_time_ids.repeat(elems_to_repeat, 1)}
-                    # print(tokens_one.requires_grad, tokens_two.requires_grad)
                     prompt_embeds, pooled_prompt_embeds = encode_prompt(
                         text_encoders=[text_encoder_one, text_encoder_two],
                         tokenizers=None,
@@ -1601,8 +1563,6 @@ def main(args):
                     model_pred = unet(
                         noisy_model_input, timesteps, prompt_embeds_input, added_cond_kwargs=unet_added_conditions
                     ).sample
-                    # print(text_encoder_one.text_model.encoder.layers)
-                    # exit()
 
                 # Get the target for loss depending on the prediction type
                 if noise_scheduler.config.prediction_type == "epsilon":
@@ -1639,32 +1599,7 @@ def main(args):
                 optimizer.step()
                 lr_scheduler.step()
                 optimizer.zero_grad()
-                
-                # print("shyam")
-                # for i in range(len(unet_lora_parameters)):
-                #     if unet_lora_parameters[i].grad is None:
-                #         print("unet",i)
-                # for i in range(len(text_lora_parameters_one)):
-                #     if text_lora_parameters_one[i].grad is None:
-                #         print("t1", i)
-                # for i in range(len(text_lora_parameters_two)):
-                #     if text_lora_parameters_two[i].grad is None:
-                #         print("t2", i)
-                # # print(text_lora_parameters_one[-1].grad)
-                # exit()
-                # print(len(unet_lora_parameters))
         
-                
-
-            # print("shyam kamal")
-            # # print(text_lora_parameters_two[0])
-            # for ij in range(prev_shyam.shape[0]):
-            #     for ijk in range(prev_shyam.shape[1]):
-            #         if(prev_shyam[ij][ijk]==text_lora_parameters_two[0][ij][ijk]):
-            #             pass
-            #         else:
-            #             print("not equal")
-                # exit()
             # Checks if the accelerator has performed an optimization step behind the scenes
             if accelerator.sync_gradients:
                 progress_bar.update(1)
@@ -1771,27 +1706,19 @@ def main(args):
 
                 del pipeline
                 torch.cuda.empty_cache()
-
-    # print(unet_lora_parameters[0])
-    # exit()
+    
     # Save the lora layers
     accelerator.wait_for_everyone()
     if accelerator.is_main_process:
         unet = accelerator.unwrap_model(unet)
         unet = unet.to(torch.float32)
         unet_lora_layers = unet_attn_processors_state_dict(unet)
-        if(args.unet_tune_mlp): # Added
-            unet_lora_layers_ffn = unet_ffn_within_attn_processors_state_dict(unet) # Added
-            # print(unet_lora_layers_ffn[list(unet_lora_layers_ffn.keys())[0]])
-            unet_lora_layers.update(unet_lora_layers_ffn) # Added
-            # print(unet_lora_layers.keys())
-        
+        if(args.unet_tune_mlp):
+            unet_lora_layers_ffn = unet_ffn_within_attn_processors_state_dict(unet)
+            unet_lora_layers.update(unet_lora_layers_ffn)        
 
         if args.train_text_encoder:
             text_encoder_one = accelerator.unwrap_model(text_encoder_one)
-            # print(text_encoder_one)
-            # print(text_encoder_two)
-            # exit()
             text_encoder_lora_layers = text_encoder_lora_state_dict(text_encoder_one.to(torch.float32), 
                 attn_update_text=args.attn_update_text,
                 text_tune_mlp=args.text_tune_mlp,
@@ -1802,17 +1729,11 @@ def main(args):
                 attn_update_text=args.attn_update_text,
                 text_tune_mlp=args.text_tune_mlp,
             )
-            # print("shyam")
-            # print(text_encoder_lora_layers)
-            # exit()
         else:
             text_encoder_lora_layers = None
             text_encoder_2_lora_layers = None
-
-        # print(text_encoder_lora_layers.keys())
-        # print("shyam")
-        # print(text_encoder_2_lora_layers.keys())
-        # exit()
+        
+        
         StableDiffusionXLPipeline.save_lora_weights(
             save_directory=args.output_dir,
             unet_lora_layers=unet_lora_layers,
@@ -1850,11 +1771,11 @@ def main(args):
 
         # load attention processors (need to pass adapter Type as well)
         pipeline.load_lora_weights(args.output_dir, 
-            adapter_type=args.adapter_type, # Added
-            attn_update_unet=args.attn_update_unet, # Added
-            attn_update_text=args.attn_update_text, # Added
-            # text_tune_mlp=args.text_tune_mlp, # No need for this one # Added
-            train_text_encoder=args.train_text_encoder, # Added
+            adapter_type=args.adapter_type,
+            attn_update_unet=args.attn_update_unet,
+            attn_update_text=args.attn_update_text,
+            # text_tune_mlp=args.text_tune_mlp, # No need for this one
+            train_text_encoder=args.train_text_encoder,
         )
 
         # run inference
@@ -1899,17 +1820,9 @@ def main(args):
             )
     accelerator.end_training()
     
-    # delete the log folder completely
-    log_folder = os.path.join(args.output_dir, "logs")
-    if os.path.exists(log_folder):
-        shutil.rmtree(log_folder)
-    
     
     
 
 if __name__ == "__main__":
-    import time
-    start_time = time.time()
     args = parse_args()
     main(args)
-    print("--- %s seconds ---" % (time.time() - start_time))

@@ -112,8 +112,6 @@ def text_encoder_attn_modules(text_encoder):
         for i, layer in enumerate(text_encoder.text_model.encoder.layers):
             name = f"text_model.encoder.layers.{i}.self_attn"
             mod = layer.self_attn
-            # try: print("shyam", mod.q_proj.lora_linear_layer.up.weight, "kamal")
-            # except: pass
             attn_modules.append((name, mod))
     else:
         raise ValueError(f"do not know how to get attention modules for: {text_encoder.__class__.__name__}")
@@ -128,7 +126,6 @@ def text_encoder_mlp_modules(text_encoder):
         for i, layer in enumerate(text_encoder.text_model.encoder.layers):
             mlp_mod = layer.mlp
             name = f"text_model.encoder.layers.{i}.mlp"
-            # print(kamla); exit()
             mlp_modules.append((name, mlp_mod))
     else:
         raise ValueError(f"do not know how to get mlp modules for: {text_encoder.__class__.__name__}")
@@ -140,25 +137,11 @@ def text_encoder_lora_state_dict(text_encoder, attn_update_text=None, text_tune_
     state_dict = {}
 
     attn_update_text = list(attn_update_text)
-    # print(attn_update_text); exit()
     t = text_encoder_attn_modules(text_encoder)
-    # print(t[0][1])
-    # print(t[0][1].q_proj.lora_linear_layer.down.weight)
-    # exit()
     for name, module in text_encoder_attn_modules(text_encoder):
-        # print(name)
-        # print(module.q_proj.lora_linear_layer.down.weight)
-        # # exit()
-        # print("shyam")
-        # print(module.q_proj.lora_linear_layer.state_dict())
-        # # print(module.q_proj.lora_linear_layer.state_dict().items())
-        # exit()
         if("q" in attn_update_text):
             for k, v in module.q_proj.lora_linear_layer.state_dict().items():
                 state_dict[f"{name}.q_proj.lora_linear_layer.{k}"] = v
-                # print(v)
-                # exit()
-            # exit()
 
         if("k" in attn_update_text):
             for k, v in module.k_proj.lora_linear_layer.state_dict().items():
@@ -412,9 +395,6 @@ class UNet2DConditionLoadersMixin:
                     f"The `state_dict` has to be empty at this point but has the following keys \n\n {', '.join(state_dict.keys())}"
                 )
             
-            # print(lora_grouped_dict.keys())
-            # exit()
-            
             for key, value_dict in lora_grouped_dict.items():
                 attn_processor = self
                 for sub_key in key.split("."):
@@ -458,17 +438,13 @@ class UNet2DConditionLoadersMixin:
                 elif "lora_layer.down.weight" in value_dict:
                     if(adapter_type=="lora"): rank = value_dict["lora_layer.down.weight"].shape[0]
                     elif(adapter_type=="krona"):
-                        # raise ValueError("Currently not supported.")
                         rank_a2, rank_a1 = value_dict["lora_layer.down.weight"].shape # A
                         rank_b1, rank_b2 = value_dict[f"lora_layer.up.weight"].shape # B
-                        # print(rank_a1, rank_a2, rank_b1, rank_b2)
                         rank = (rank_a1, rank_a2)
                         hidden_size = rank_a1 * rank_b1 # in_features
                             
                     else: raise ValueError("Only LoRA and KronA supported.")
 
-                    # print("2nd", key, value_dict.keys())
-                    # exit()
                     if isinstance(attn_processor, LoRACompatibleConv):
                         in_features = attn_processor.in_channels
                         out_features = attn_processor.out_channels
@@ -514,7 +490,6 @@ class UNet2DConditionLoadersMixin:
                 
                 else: 
                     # To handle SDXL.
-                    
                     rank_mapping = {}
                     hidden_size_mapping = {}
                     projection_ids_list = []
@@ -522,11 +497,7 @@ class UNet2DConditionLoadersMixin:
                     if("q" in attn_update_unet): projection_ids_list.append("to_q")
                     if("v" in attn_update_unet): projection_ids_list.append("to_v")
                     if("o" in attn_update_unet): projection_ids_list.append("to_out")
-                    # print("check")
-                    # print(value_dict[list(value_dict.keys())[0]].shape)
-                    # exit()
                     for projection_id in projection_ids_list:
-
                         # Added lora and KronA
                         if(adapter_type=="lora"):
                             rank = value_dict[f"{projection_id}_lora.down.weight"].shape[0]
@@ -534,11 +505,8 @@ class UNet2DConditionLoadersMixin:
                         elif(adapter_type=="krona"):
                             rank_a2, rank_a1 = value_dict[f"{projection_id}_lora.down.weight"].shape # A
                             rank_b1, rank_b2 = value_dict[f"{projection_id}_lora.up.weight"].shape # B
-                            # print(rank_a1, rank_a2, rank_b1, rank_b2)
                             rank = (rank_a1, rank_a2)
                             hidden_size = rank_a1 * rank_b1 # in_features
-                            # exit()
-                            # raise ValueError("Currently not supported.")
                         else: raise ValueError("Only LoRA and KronA are supported.")
 
                         rank_mapping.update({f"{projection_id}_lora.down.weight": rank})
@@ -613,13 +581,7 @@ class UNet2DConditionLoadersMixin:
                     if("o" in attn_update_unet): 
                         out_rank = rank_mapping.get("to_out_lora.down.weight")
                         hidden_size_ = hidden_size_mapping.get("to_out_lora.up.weight")
-                                   
-                    # print(k_rank, q_rank, v_rank, out_rank)
-                    # exit()
-                    # print(k_rank, q_rank, v_rank, out_rank, hidden_size, cross_attention_dim,
-                    # hidden_size_mapping.get("to_q_lora.up.weight"), hidden_size_mapping.get("to_v_lora.up.weight"),
-                    # hidden_size_mapping.get("to_out_lora.up.weight"))
-                    # exit()
+                    
                     if attn_processor_class is not LoRAAttnAddedKVProcessor: # getting call
                         attn_processors[key] = attn_processor_class(
                             k_rank=k_rank if "k" in attn_update_unet else None, # added
@@ -1139,7 +1101,6 @@ class LoraLoaderMixin:
             '/home/nmathur/tune_diffusion/src/diffusers/pipelines/stable_diffusion_xl/pipeline_stable_diffusion_xl.py'
         """
         state_dict, network_alphas = self.lora_state_dict(pretrained_model_name_or_path_or_dict, **kwargs)
-        # print(state_dict, network_alphas); exit()
         self.load_lora_into_unet(state_dict, network_alphas=network_alphas, 
             unet=self.unet, 
             adapter_type=adapter_type, # Added
@@ -1406,10 +1367,6 @@ class LoraLoaderMixin:
             unet (`UNet2DConditionModel`):
                 The UNet model to load the LoRA layers into.
         """
-        # print(cls)
-        # print(state_dict.keys())
-        # print(unet)
-        # exit()
         # If the serialization format is new (introduced in https://github.com/huggingface/diffusers/pull/2918),
         # then the `state_dict` keys should have `self.unet_name` and/or `self.text_encoder_name` as
         # their prefixes.
@@ -1478,8 +1435,6 @@ class LoraLoaderMixin:
 
             if len(text_encoder_lora_state_dict) > 0:
                 logger.info(f"Loading {prefix}.")
-
-                # print(text_encoder_lora_state_dict.keys()); exit()
                 if any("to_out_lora" in k for k in text_encoder_lora_state_dict.keys()):
                     # Convert from the old naming convention to the new naming convention.
                     #
@@ -1609,12 +1564,6 @@ class LoraLoaderMixin:
                         k.replace(f"{prefix}.", ""): v for k, v in network_alphas.items() if k in alpha_keys
                     }
 
-                # print(text_encoder)
-                # print(lora_scale)
-                # print(network_alphas)
-                # print(rank)
-                # print(patch_mlp)
-                # exit()
                 cls._modify_text_encoder(
                     text_encoder,
                     lora_scale,
@@ -1623,7 +1572,7 @@ class LoraLoaderMixin:
                     rank_v=rank_v if "v" in attn_update_text else None,
                     rank_q=rank_q if "q" in attn_update_text else None,
                     rank_o=rank_out if "o" in attn_update_text else None,
-                    rank_mlp=rank_mlp if text_tune_mlp else None,
+                    # rank_mlp=rank_mlp if text_tune_mlp else None,
                     patch_mlp=patch_mlp,
                     adapter_type=adapter_type,
                     attn_update_text=attn_update_text,
@@ -1697,11 +1646,6 @@ class LoraLoaderMixin:
                 attn_module.k_proj = PatchedLoraProjection(
                     attn_module.k_proj, lora_scale, network_alpha=key_alpha, rank=rank_k, dtype=dtype, adapter_type=adapter_type
                 )
-                # print("kamal raja")
-                # print(attn_module.k_proj)
-                # for param in attn_module.k_proj.lora_linear_layer.parameters():
-                #     print(param)
-                # exit()
                 lora_parameters.extend(attn_module.k_proj.lora_linear_layer.parameters())
 
             if("q" in attn_update_text):

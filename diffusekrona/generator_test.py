@@ -252,10 +252,10 @@ if __name__ == "__main__":
     prompts = get_promts(os.path.basename(args.instance_data_dir))
     
     # find the availabel checkpoint list name
-    from_checkpoint = ""
+    from_checkpoint = "/home/pnoel/tune_diffusion/results/cat/krona_k64:8q64:8v64:8o64:8_sdxl_0.001/checkpoint-1000"
     # generate images based on given prompts
     generator(args, prompts, from_checkpoint)
     # compute the quantiative results (CLIP-I, CLIP-T)
-    clipi, clipt = evaluator(args, prompts, from_checkpoint)
-    save_metrics(args, clipi, clipt, from_checkpoint)
+    # clipi, clipt = evaluator(args, prompts, from_checkpoint)
+    # save_metrics(args, clipi, clipt, from_checkpoint)
 
