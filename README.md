@@ -29,7 +29,7 @@ conda create -y -n diffusekrona python=3.11
 conda activate diffusekrona
 ```
 
-2. Package Installations
+2. Package installation
 ```python
 pip install -e ".[torch]"           # To install HuggingFace Diffusers library
 pip install -r requirements.txt     # To install extra requirements
@@ -42,40 +42,31 @@ pip install git+https://github.com/openai/CLIP.git
 ```
 
 ## 🔥 Quickstart
-1. Clone the Datasets and remove the *subject/generated subfolders
+1. Clone the dataset and remove the `*subject/generated` subfolders
 ```python
 git clone https://github.com/diffusekrona/data && rm -rf data/.git
 mkdir outputs
 cd diffusekrona/
-python format_datasets.py
+python format_datasets.py       # To format the dataset (NOT mandatory)
 ```
 
-2. Finetune diffusekrona (leberaing sdxl model) using script file
+2. Finetune diffusekrona using script file
 ```python
 cd diffusekrona/                # RUN inside diffusekrona folder
-bash diffusekrona_sdxl.sh       # RUN when you have single GPU
+CUDA_VISIBLE_DEVICES=$GPU_ID bash finetune_sdxl.sh      # Leveraging SDXL model
+CUDA_VISIBLE_DEVICES=$GPU_ID bash finetune_sd.sh        # Leveraging SDXL model
 ```
-If you have multiple GPUs then please run `CUDA_VISIBLE_DEVICES=$GPU_ID bash diffusekrona_sdxl.sh`. 
 
-Generate images from the finetuned weights 
+3. Generate images from the finetuned weights (RUN inside diffusekrona folder)
 ```python
-python generator.py
+CUDA_VISIBLE_DEVICES=$GPU_ID accelerate launch inference_sdxl.py    # Leveraging SDXL model
+CUDA_VISIBLE_DEVICES=$GPU_ID accelerate launch inference_sd.py    # Leveraging SD model
 ```
 
-<!-- ## What to run?
-To run without text encoder config please hit this inside ```dreambooth``` folder
-```
-bash dreambooth/test.sh
-```
-
-
-To run with text encoder config please hit this inside ```dreambooth``` folder
-```
-bash test_text.sh
-``` -->
+Note: Specify a single GPU index only (e.g., `CUDA_VISIBLE_DEVICES=0`) and avoid listing multiple IDs.
 
 ## 🙏🏼 Acknowledgement
-Our codebase is built on top of the Hugging Face [Diffusers](https://github.com/huggingface/diffusers) library, and we’re incredibly grateful for their amazing work!
+Our codebase is built on top of the HuggingFace [Diffusers](https://github.com/huggingface/diffusers) library, and we’re incredibly grateful for their amazing work!
 
 ## ✏️ Citation
 If you think this project is helpful, please feel free to leave a star⭐️ and cite our paper:
