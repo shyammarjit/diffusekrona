@@ -45,7 +45,7 @@ pip install git+https://github.com/openai/CLIP.git
 1. Clone the Datasets and remove the *subject/generated subfolders
 ```python
 git clone https://github.com/diffusekrona/data && rm -rf data/.git
-mkdir results
+mkdir outputs
 cd diffusekrona/
 python format_datasets.py
 ```

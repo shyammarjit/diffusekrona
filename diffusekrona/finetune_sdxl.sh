@@ -1,23 +1,23 @@
-subjects="cat"
+subjects="dog6"
 export MODEL_NAME="stabilityai/stable-diffusion-xl-base-1.0"
-export OUTPUT_DIR="../results/${subjects}"
+export OUTPUT_DIR="../outputs/${subjects}"
 export INSTANCE_DIR="../data/${subjects}/input/"
 
 attn_update_unet="kqvo"
 # unet parameters
 a1=64
 a2=8
-krona_unet_k_rank_a1=$a1 # k matrix factorization rank
-krona_unet_k_rank_a2=$a2 # k matrix factorization rank
-krona_unet_q_rank_a1=$a1 # q matrix factorization rank
-krona_unet_q_rank_a2=$a2 # q matrix factorization rank
-krona_unet_v_rank_a1=$a1 # v matrix factorization rank
-krona_unet_v_rank_a2=$a2 # v matrix factorization rank
-krona_unet_o_rank_a1=$a1 # out matrix factorization rank
-krona_unet_o_rank_a2=$a2 # out matrix factorization rank
+krona_unet_k_rank_a1=$a1 # k matrix factorization rank of A1
+krona_unet_k_rank_a2=$a2 # k matrix factorization rank of A2
+krona_unet_q_rank_a1=$a1 # q matrix factorization rank of A1
+krona_unet_q_rank_a2=$a2 # q matrix factorization rank of A2
+krona_unet_v_rank_a1=$a1 # v matrix factorization rank of A1
+krona_unet_v_rank_a2=$a2 # v matrix factorization rank of A2
+krona_unet_o_rank_a1=$a1 # out matrix factorization rank of A1
+krona_unet_o_rank_a2=$a2 # out matrix factorization rank of A2
 
 lr=1e-3         # learning rate
-steps=1000      # number of fine-tuning steps
+steps=500      # number of fine-tuning steps
 
 # Note that we kept text encoder frozen to further reduce the parameter overhead.
 # We also don't recomend to finetune Linear layers (MLPs). We only recomend to finetune attention metrices (K, Q, V, O).
@@ -27,7 +27,7 @@ accelerate launch train_dreambooth_lora_sdxl.py \
     --instance_data_dir=$INSTANCE_DIR \
     --output_dir=$OUTPUT_DIR \
     --mixed_precision="fp16" \
-    --instance_prompt="a photo of sks ${subjects}" \
+    --instance_prompt="a photo of sks${subjects}" \
     --resolution=1024 \
     --train_batch_size=1 \
     --gradient_accumulation_steps=4 \

@@ -80,7 +80,7 @@ docs/_build/
 # PyBuilder
 target/
 
-results/
+outputs/
 
 # Jupyter Notebook
 .ipynb_checkpoints
