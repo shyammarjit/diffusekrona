@@ -33,7 +33,7 @@ def generator(checkpoint_path, output_dir, prompt, seed=0):
     print(f"Image generation completed.")
 
 
-prompt = "a sksdog6 op top of sofa" # prompt for the image generation
+prompt = "A sksdog6 op top of sofa" # prompt for the image generation
 checkpoint_path = "../outputs/dog6/krona_k64:8q64:8v64:8o64:8_sdxl_0.001/checkpoint-500"
 output_path = checkpoint_path # where you want to save the generated images
 generator(checkpoint_path, output_path, prompt, seed=5) # generate the image
