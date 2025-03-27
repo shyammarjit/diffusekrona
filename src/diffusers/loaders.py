@@ -1098,7 +1098,7 @@ class LoraLoaderMixin:
                 See [`~loaders.LoraLoaderMixin.lora_state_dict`].
         
         Note: This does not get call for SDXL. For SDXL, we got the call from 
-            '/home/nmathur/tune_diffusion/src/diffusers/pipelines/stable_diffusion_xl/pipeline_stable_diffusion_xl.py'
+            '../tune_diffusion/src/diffusers/pipelines/stable_diffusion_xl/pipeline_stable_diffusion_xl.py'
         """
         state_dict, network_alphas = self.lora_state_dict(pretrained_model_name_or_path_or_dict, **kwargs)
         self.load_lora_into_unet(state_dict, network_alphas=network_alphas, 

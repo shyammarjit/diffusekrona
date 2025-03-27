@@ -1,6 +1,6 @@
 <div align="center">
 
-## 🚀 DiffuseKronA <br> [webpage](https://diffusekrona.github.io/) | [paper](https://openaccess.thecvf.com/content/WACV2025/papers/Marjit_DiffuseKronA_A_Parameter_Efficient_Fine-Tuning_Method_for_Personalized_Diffusion_Models_WACV_2025_paper.pdf) | [video](https://www.youtube.com/watch?v=BLpPFKcPKNY) | [dataset](https://github.com/diffusekrona/data)<br> <p align="left">💡 Highlight</p>
+## 🚀 DiffuseKronA (WACV-25 🎉)<br> [webpage](https://diffusekrona.github.io/) | [paper](https://openaccess.thecvf.com/content/WACV2025/papers/Marjit_DiffuseKronA_A_Parameter_Efficient_Fine-Tuning_Method_for_Personalized_Diffusion_Models_WACV_2025_paper.pdf) | [video](https://www.youtube.com/watch?v=BLpPFKcPKNY) | [dataset](https://github.com/diffusekrona/data)<br> <p align="left">💡 Highlight</p>
 </div>
 ✔️ Parameter Efficient: A minimum 35% reduction in parameters. By changing Kronecker factors, we can even achieve up to a 75% reduction with results comparable to LoRA-DreamBooth.<br/>
 ✔️ Enhanced Stability: Our method is more stable compared to LoRA-DreamBooth. Stability refers to variations in images generated across different learning rates and Kronecker factor/ranks, which makes LoRA-DreamBooth harder to fine-tune.<br/>

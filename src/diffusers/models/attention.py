@@ -104,12 +104,6 @@ class BasicTransformerBlock(nn.Module):
         # tune_mlp: Optional[bool] = None,
     ):
         super().__init__()
-        # print(adapter_type, adapter_low_rank, tune_mlp)
-        # if(adapter_type=="lora"):
-        #     print(kamla)
-        # if(adapter_type==None):
-        #     print(kamal)
-        # print(kamal)
         self.only_cross_attention = only_cross_attention
 
         self.use_ada_layer_norm_zero = (num_embeds_ada_norm is not None) and norm_type == "ada_norm_zero"
@@ -129,7 +123,7 @@ class BasicTransformerBlock(nn.Module):
             self.norm1 = AdaLayerNormZero(dim, num_embeds_ada_norm)
         else:
             self.norm1 = nn.LayerNorm(dim, elementwise_affine=norm_elementwise_affine)
-        # print("attention model")
+        
         self.attn1 = Attention(
             query_dim=dim,
             heads=num_attention_heads,
@@ -139,7 +133,6 @@ class BasicTransformerBlock(nn.Module):
             cross_attention_dim=cross_attention_dim if only_cross_attention else None,
             upcast_attention=upcast_attention,
         )
-        # exit()
 
         # 2. Cross-Attn
         if cross_attention_dim is not None or double_self_attention:
@@ -217,7 +210,7 @@ class BasicTransformerBlock(nn.Module):
             attention_mask=attention_mask,
             **cross_attention_kwargs,
         )
-        # exit()
+
         if self.use_ada_layer_norm_zero:
             attn_output = gate_msa.unsqueeze(1) * attn_output
         hidden_states = attn_output + hidden_states
