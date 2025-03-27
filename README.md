@@ -105,12 +105,6 @@ Generation Results on Car modifications and showcase 🚘
 <img src="https://diffusekrona.github.io/static/images/front4.png" alt="COCO" width="100%">
 </details>
 
-<details close>
-<summary><font size="4">
-Generation Results on Car modifications and showcase 
-</font></summary>
-<img src="https://diffusekrona.github.io/static/images/front4.png" alt="COCO" width="100%">
-</details>
 
 <details open>
 <summary><font size="4">
