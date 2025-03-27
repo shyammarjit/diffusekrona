@@ -67,12 +67,9 @@ from diffusers.models.attention_processor import (
 from diffusers.optimization import get_scheduler
 from diffusers.utils import check_min_version, is_wandb_available
 from diffusers.utils.import_utils import is_xformers_available
-from logger import setup_logger
 from diffusers.models.lora import LoRALinearLayer
-from prompts import instance_prompt
 # Will error if the minimal version of diffusers is not installed. Remove at your own risks.
 check_min_version("0.21.0.dev0")
-
 logger = get_logger(__name__)
 
 
@@ -224,7 +221,6 @@ def struct_output(args):
                 text_attn_config = text_attn_config + "f" + str(args.krona_text_ffn_rank_a1) + ":" + str(args.krona_text_ffn_rank_a2)    
             attn_config = attn_config + "_" + text_attn_config
             exp = f"krona_{attn_config}_{args.diffusion_model}_{args.learning_rate}_{args.learning_rate_text}"
-        # raise ValueError("currently not supported.")
     else: raise AttributeError(f"{args.adapter_type} wrong adapter format.")
     
     exp_ = os.path.join(dataset_, exp)
@@ -782,9 +778,7 @@ def parse_args(input_args=None):
         args = parser.parse_args(input_args)
     else:
         args = parser.parse_args()
-        
-    # our edit
-    args.instance_prompt = instance_prompt(os.path.basename(args.instance_data_dir))
+    
     if args.with_prior_preservation:
         args.class_prompt = 'a '+ args.instance_prompt.split(',')[1]
     args.output_dir = struct_output(args) # structure the output folder
@@ -1043,7 +1037,6 @@ def main(args):
 
     # Currently, it's not possible to do gradient accumulation when training two models with accelerate.accumulate
     # This will be enabled soon in accelerate. For now, we don't allow gradient accumulation when training two models.
-    # TODO (sayakpaul): Remove this check when gradient accumulation with two models is enabled in accelerate.
     if args.train_text_encoder and args.gradient_accumulation_steps > 1 and accelerator.num_processes > 1:
         raise ValueError(
             "Gradient accumulation is not supported when training the text encoder in distributed training. "
@@ -1194,19 +1187,6 @@ def main(args):
         if args.train_text_encoder:
             text_encoder.gradient_checkpointing_enable()
 
-    # now we will add new LoRA weights to the attention layers
-    # It's important to realize here how many attention weights will be added and of which sizes
-    # The sizes of the attention layers consist only of two different variables:
-    # 1) - the "hidden_size", which is increased according to `unet.config.block_out_channels`.
-    # 2) - the "cross attention size", which is set to `unet.config.cross_attention_dim`.
-
-    # Let's first see how many attention processors we will have to set.
-    # For Stable Diffusion, it should be equal to:
-    # - down blocks (2x attention layers) * (2x transformer layers) * (3x down blocks) = 12
-    # - mid blocks (2x attention layers) * (1x transformer layers) * (1x mid blocks) = 2
-    # - up blocks (2x attention layers) * (3x transformer layers) * (3x down blocks) = 18
-    # => 32 layers
-
     # Set correct lora layers
     unet_lora_attn_procs = {}
     unet_lora_parameters = []
@@ -1227,8 +1207,7 @@ def main(args):
             lora_attn_processor_class = (
                 LoRAAttnProcessor2_0 if hasattr(F, "scaled_dot_product_attention") else LoRAAttnProcessor
             )
-
-        # To DO: May need to modify the rank of K, Q, V and Out (Future Experiments)
+        
         if(args.adapter_type=="lora"):
             module = lora_attn_processor_class(
                 hidden_size=hidden_size, 
@@ -1258,8 +1237,7 @@ def main(args):
         unet_lora_parameters.extend(module.parameters())
 
     unet.set_attn_processor(unet_lora_attn_procs)
-    if(args.unet_tune_mlp): 
-        # ToDo: fix krona ffn layer 
+    if(args.unet_tune_mlp):
         if args.adapter_type=="lora": lora_mlp_rank=args.unet_lora_rank_mlp
         elif args.adapter_type=="krona": lora_mlp_rank=(args.krona_unet_ffn_rank_a1, args.krona_unet_ffn_rank_a2)
         else: raise AttributeError("wrong adapter type")
@@ -1284,7 +1262,6 @@ def main(args):
                 patch_mlp=args.text_tune_mlp,
             )
         elif args.adapter_type=="krona":
-            # ToDo: Text encoder ffn/mlp updates are not added.
             text_lora_parameters = LoraLoaderMixin._modify_text_encoder(
                 text_encoder, dtype=torch.float32, adapter_type=args.adapter_type, attn_update_text=args.attn_update_text,
                 rank_k=(args.krona_text_k_rank_a1, args.krona_text_k_rank_a2) if "k" in args.attn_update_text else None, # added 
@@ -1371,13 +1348,6 @@ def main(args):
     else:
         optimizer_class = torch.optim.AdamW
 
-    # Optimizer creation
-    # params_to_optimize = (
-    #     itertools.chain(unet_lora_parameters, text_lora_parameters)
-    #     if args.train_text_encoder
-    #     else unet_lora_parameters
-    # )
-    
     text_lr = (
         args.learning_rate
         if args.learning_rate_text is None
@@ -1661,14 +1631,6 @@ def main(args):
                 optimizer.step()
                 lr_scheduler.step()
                 optimizer.zero_grad()
-                
-                # Check if all grad are ok or not? ANS: ALL OK.
-                # for i in range(len(unet_lora_parameters)):
-                #     if unet_lora_parameters[i].grad is None:
-                #         print("unet",i)
-                # for i in range(len(text_lora_parameters)):
-                #     if text_lora_parameters[i].grad is None:
-                #         print("t1", i)
 
             # Checks if the accelerator has performed an optimization step behind the scenes
             if accelerator.sync_gradients:

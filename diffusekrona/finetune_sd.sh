@@ -1,23 +1,26 @@
 subjects="teapot" # Subject Name
 export MODEL_NAME="stabilityai/stable-diffusion-2-1-base" # Model card
-export OUTPUT_DIR="../outputs/${subjects}"
-export INSTANCE_DIR="../data/${subjects}/input/"
+export OUTPUT_DIR="../outputs/${subjects}" # Where to save the model
+export INSTANCE_DIR="../data/${subjects}/input/" # Where the input data is stored
 
+
+#------------------------------------------------------------------------------------
+#                                    Hyperparameters
+#------------------------------------------------------------------------------------
 attn_update_unet="kqvo"
-# unet hyperparameters
 a1=64
 a2=8
-krona_unet_k_rank_a1=$a1 # k matrix factorization rank of A1
-krona_unet_k_rank_a2=$a2 # k matrix factorization rank of A2
-krona_unet_q_rank_a1=$a1 # q matrix factorization rank of A1
-krona_unet_q_rank_a2=$a2 # q matrix factorization rank of A2
-krona_unet_v_rank_a1=$a1 # v matrix factorization rank of A1
-krona_unet_v_rank_a2=$a2 # v matrix factorization rank of A2
-krona_unet_o_rank_a1=$a1 # out matrix factorization rank of A1
-krona_unet_o_rank_a2=$a2 # out matrix factorization rank of A2
+krona_unet_k_rank_a1=$a1 # k matrix factorization rank of a1
+krona_unet_k_rank_a2=$a2 # k matrix factorization rank of a2
+krona_unet_q_rank_a1=$a1 # q matrix factorization rank of a1
+krona_unet_q_rank_a2=$a2 # q matrix factorization rank of a2
+krona_unet_v_rank_a1=$a1 # v matrix factorization rank of a1
+krona_unet_v_rank_a2=$a2 # v matrix factorization rank of a2
+krona_unet_o_rank_a1=$a1 # out matrix factorization rank of a1
+krona_unet_o_rank_a2=$a2 # out matrix factorization rank of a2
 
 lr=1e-3
-steps=50
+steps=500
 
 accelerate launch train_dreambooth_lora.py \
     --pretrained_model_name_or_path=$MODEL_NAME \
