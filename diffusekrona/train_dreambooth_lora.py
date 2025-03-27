@@ -1753,7 +1753,6 @@ def main(args):
 
         if(args.unet_tune_mlp): 
             unet_lora_layers_ffn = unet_ffn_within_attn_processors_state_dict(unet)
-            # print(unet_lora_layers_ffn[list(unet_lora_layers_ffn.keys())[0]])
             unet_lora_layers.update(unet_lora_layers_ffn)
         
         if text_encoder is not None and args.train_text_encoder:

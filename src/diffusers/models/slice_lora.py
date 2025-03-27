@@ -28,37 +28,31 @@ class SliceLoRALinearLayer(nn.Module):
 
         self.rank = rank
         self.dh = in_features
-        self.a1 = int(self.dh/rank) # 256
-        self.b1 = rank # 4
-        self.a2 = rank # 4
+        self.a1 = int(self.dh/rank)
+        self.b1 = rank
+        self.a2 = rank
         self.b2 = int(out_features/rank) 
-        self.down = nn.Linear(self.a1, self.a2, bias=False, device=device, dtype=dtype) # A
+        self.down = nn.Linear(self.a1, self.a2, bias=False, device=device, dtype=dtype)
         self.network_alpha = network_alpha
-        self.up = nn.Linear(self.b1, self.b2, bias=False, device=device, dtype=dtype) # B
+        self.up = nn.Linear(self.b1, self.b2, bias=False, device=device, dtype=dtype)
 
         nn.init.kaiming_uniform_(self.down.weight, a=math.sqrt(5), mode='fan_in', nonlinearity='leaky_relu')
         nn.init.zeros_(self.up.weight)
 
     def forward(self, hidden_states):
-        # print("SliceLoRA")
         orig_dtype = hidden_states.dtype
         dtype = self.down.weight.dtype
-        # print("hidden state", hidden_states.shape)
         
         if len(hidden_states.shape) == 3:
-            B1, C, D = hidden_states.size() # get the matrix shape
+            B1, C, D = hidden_states.size()
             hidden_states = hidden_states.view(-1, self.a2,  self.a1)
-            # print("hidden state2",hidden_states.shape)
 
-            B2, _, _ = hidden_states.size() # get the matrix shape
+            B2, _, _ = hidden_states.size()
             up_hidden_states = self.up(self.down(hidden_states.to(dtype)))
-            # print("uphidden state1",up_hidden_states.shape)
 
             up_hidden_states= up_hidden_states.view(B1, C, self.b2*self.b1)
-            # print("uphidden state2",up_hidden_states.shape)
-            # exit()
         else: 
-            B1, C = hidden_states.size() # get the matrix shape
+            B1, C = hidden_states.size()
             hidden_states = hidden_states.view(B1, self.a2, self.a1)
             hidden_states = hidden_states.view(B1*self.a2, self.a1)
             up_hidden_states = self.up((self.down(hidden_states.to(dtype))))
@@ -66,8 +60,6 @@ class SliceLoRALinearLayer(nn.Module):
 
         if self.network_alpha is not None:
             up_hidden_states *= self.network_alpha / self.rank
-        # print("huehue")
-        # exit()
         return up_hidden_states.to(orig_dtype)
 
 

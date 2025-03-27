@@ -633,8 +633,6 @@ def register_to_config(init):
 
         new_kwargs = {**config_init_kwargs, **new_kwargs}
         getattr(self, "register_to_config")(**new_kwargs)
-        # print(args) # added
-        # print(init_kwargs) # added
         init(self, *args, **init_kwargs)
 
     return inner_init

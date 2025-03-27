@@ -188,7 +188,6 @@ class BasicTransformerBlock(nn.Module):
         cross_attention_kwargs: Dict[str, Any] = None,
         class_labels: Optional[torch.LongTensor] = None,
     ):
-        # print("getting call from attention text encoder")
         # Notice that normalization is always applied before the real computation in the following blocks.
         # 1. Self-Attention
         if self.use_ada_layer_norm:
