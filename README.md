@@ -65,6 +65,64 @@ CUDA_VISIBLE_DEVICES=$GPU_ID accelerate launch inference_sd.py      # Leveraging
 
 Note: Specify a single GPU index only (e.g., `CUDA_VISIBLE_DEVICES=0`) and avoid listing multiple IDs.
 
+## 🎖️ Results
+
+<details open>
+<summary><font size="4">
+Generation Results on Human Faces 🗿
+</font></summary>
+<img src="https://diffusekrona.github.io/static/images/front3.png" alt="COCO" width="100%">
+</details>
+
+<details close>
+<summary><font size="4">
+Generation Results on Animal (Cat), Teddy Bear, and Shoes
+</font></summary>
+<img src="https://diffusekrona.github.io/static/images/front1.png" alt="COCO" width="100%">
+</details>
+
+
+<details close>
+<summary><font size="4">
+Generation Results on Toy, Teddy Bear, and Anime Character
+</font></summary>
+<img src="https://diffusekrona.github.io/static/images/front2.png" alt="COCO" width="100%">
+</details>
+
+<details close>
+<summary><font size="4">
+Generation Results on Anime Characters and Animal (Cat)
+</font></summary>
+<img src="https://diffusekrona.github.io/static/images/front_anime.png" alt="COCO" width="100%">
+</details>
+
+
+
+<details close>
+<summary><font size="4">
+Generation Results on Car modifications and showcase 🚘
+</font></summary>
+<img src="https://diffusekrona.github.io/static/images/front4.png" alt="COCO" width="100%">
+</details>
+
+<details close>
+<summary><font size="4">
+Generation Results on Car modifications and showcase 
+</font></summary>
+<img src="https://diffusekrona.github.io/static/images/front4.png" alt="COCO" width="100%">
+</details>
+
+<details open>
+<summary><font size="4">
+One-shot Image Generation Results on HuggingFace 🤗
+</font></summary>
+<img src="https://diffusekrona.github.io/static/images/face_compressed.png" alt="COCO" width="100%">
+</details>
+
+> For more results, please visit [here](https://diffusekrona.github.io/gallery.html).
+<!-- One-shot Image Generation
+![Face Image](https://diffusekrona.github.io/static/images/face_compressed.png) -->
+
 ## 🙏🏼 Acknowledgement
 Our codebase is built on top of the HuggingFace [Diffusers](https://github.com/huggingface/diffusers) library, and we’re incredibly grateful for their amazing work!
 
