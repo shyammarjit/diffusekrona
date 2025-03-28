@@ -60,14 +60,14 @@ from diffusers.models.attention_processor import (
     AttnAddedKVProcessor,
     AttnAddedKVProcessor2_0,
     LoRAAttnAddedKVProcessor,
-    LoRAAttnProcessor,
-    LoRAAttnProcessor2_0,
     SlicedAttnAddedKVProcessor,
 )
+
+from attention_processor import LoRAAttnProcessor, LoRAAttnProcessor2_0
+
 from diffusers.optimization import get_scheduler
 from diffusers.utils import check_min_version, is_wandb_available
 from diffusers.utils.import_utils import is_xformers_available
-from diffusekrona.krona import LoRALinearLayer
 # Will error if the minimal version of diffusers is not installed. Remove at your own risks.
 check_min_version("0.21.0.dev0")
 logger = get_logger(__name__)
@@ -1768,83 +1768,8 @@ def main(args):
             text_encoder_lora_layers=text_encoder_lora_layers,
         )
 
-        # Final inference
-        # Load previous pipeline
-        pipeline = DiffusionPipeline.from_pretrained(
-            args.pretrained_model_name_or_path, revision=args.revision, torch_dtype=weight_dtype
-        )
-
-        # We train on the simplified learning objective. If we were previously predicting a variance, we need the scheduler to ignore it
-        scheduler_args = {}
-
-        if "variance_type" in pipeline.scheduler.config:
-            variance_type = pipeline.scheduler.config.variance_type
-
-            if variance_type in ["learned", "learned_range"]:
-                variance_type = "fixed_small"
-
-            scheduler_args["variance_type"] = variance_type
-
-        pipeline.scheduler = DPMSolverMultistepScheduler.from_config(pipeline.scheduler.config, **scheduler_args)
-
-        pipeline = pipeline.to(accelerator.device)
-
-        # load attention processors
-        pipeline.load_lora_weights(args.output_dir,
-            adapter_type=args.adapter_type,
-            train_text_encoder=args.train_text_encoder,
-            attn_update_unet=args.attn_update_unet,
-            attn_update_text=args.attn_update_text,
-            text_tune_mlp=args.text_tune_mlp,    
-            weight_name="pytorch_lora_weights.safetensors"
-        )
-
-        # run inference
-        images = []
-        if args.validation_prompt and args.num_validation_images > 0:
-            generator = torch.Generator(device=accelerator.device).manual_seed(args.seed) if args.seed else None
-            images = [
-                pipeline(args.validation_prompt, num_inference_steps=25, generator=generator).images[0]
-                for _ in range(args.num_validation_images)
-            ]
-
-            for tracker in accelerator.trackers:
-                if tracker.name == "tensorboard":
-                    np_images = np.stack([np.asarray(img) for img in images])
-                    tracker.writer.add_images("test", np_images, epoch, dataformats="NHWC")
-                if tracker.name == "wandb":
-                    tracker.log(
-                        {
-                            "test": [
-                                wandb.Image(image, caption=f"{i}: {args.validation_prompt}")
-                                for i, image in enumerate(images)
-                            ]
-                        }
-                    )
-
-        if args.push_to_hub:
-            save_model_card(
-                repo_id,
-                images=images,
-                base_model=args.pretrained_model_name_or_path,
-                train_text_encoder=args.train_text_encoder,
-                prompt=args.instance_prompt,
-                repo_folder=args.output_dir,
-                pipeline=pipeline,
-            )
-            upload_folder(
-                repo_id=repo_id,
-                folder_path=args.output_dir,
-                commit_message="End of training",
-                ignore_patterns=["step_*", "epoch_*"],
-            )
 
     accelerator.end_training()
-    
-    # delete the log folder completely
-    log_folder = os.path.join(args.output_dir, "logs")
-    if os.path.exists(log_folder):
-        shutil.rmtree(log_folder)
 
 
 if __name__ == "__main__":
