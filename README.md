@@ -24,15 +24,15 @@ the advantages of the proposed method.
 ## 🛠️ Installation Steps
 
 1. Create conda environment
-```python
+```
 conda create -y -n diffusekrona python=3.11
 conda activate diffusekrona
 ```
 
 2. Package installation
-```python
-pip install -e ".[torch]"           # To install HuggingFace Diffusers library
-pip install -r requirements.txt     # To install extra requirements
+```
+pip install diffusers==0.21.0
+pip install -r requirements.txt
 pip install accelerator
 ```
 
@@ -42,6 +42,8 @@ pip install git+https://github.com/openai/CLIP.git
 ```
 
 ## 🔥 Quickstart
+> Note: For `diffusers=0.21.0`, you will get `ImportError: cannot import name 'cached_download' from 'huggingface_hub'` error. To solve it please remove the line `from huggingface_hub import HfFolder, cached_download, hf_hub_download, model_info` in dyanamic_models_utils.py script. 
+
 1. Clone the dataset and remove the `*subject/generated` subfolders
 ```python
 git clone https://github.com/diffusekrona/data && rm -rf data/.git
@@ -63,7 +65,7 @@ CUDA_VISIBLE_DEVICES=$GPU_ID accelerate launch inference_sdxl.py    # Leveraging
 CUDA_VISIBLE_DEVICES=$GPU_ID accelerate launch inference_sd.py      # Leveraging SD model
 ```
 
-Note: Specify a single GPU index only (e.g., `CUDA_VISIBLE_DEVICES=0`) and avoid listing multiple IDs.
+> Note: Specify a single GPU index only (e.g., `CUDA_VISIBLE_DEVICES=0`) and avoid listing multiple IDs.
 
 ## 🎖️ Results
 
