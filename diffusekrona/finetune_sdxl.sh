@@ -19,7 +19,7 @@ krona_unet_o_rank_a1=$a1 # out matrix factorization rank of a1
 krona_unet_o_rank_a2=$a2 # out matrix factorization rank of a2
 
 lr=1e-3     # Learning rate
-steps=500   # Number of fine-tuning steps
+steps=1000   # Number of fine-tuning steps
 
 # Note that we kept text encoder frozen to further reduce the parameter overhead.
 # We don't recommend to fine tune Linear layers (MLPs). 
