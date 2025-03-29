@@ -3,6 +3,7 @@ export attn_update_unet="kqvo"
 export prompt="A sksdog6 op top of sofa"
 export checkpoint_path="../outputs/dog6/krona_k64:8q64:8v64:8o64:8_sdxl_0.001/"
 
+# dog6 subject images are available at dataset link provided in the README
 accelerate launch inference_sdxl.py \
     --checkpoint_path=$checkpoint_path \
     --output_path=$checkpoint_path \

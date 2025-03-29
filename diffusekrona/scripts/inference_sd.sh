@@ -2,6 +2,7 @@ export adapter_type="krona"
 export attn_update_unet="kqvo"
 export prompt="A sksteapot"
 export checkpoint_path="../outputs/teapot/krona_k64:8q64:8v64:8o64:8_base_0.001"
+# teapot subject images are available at dataset link provided in the README
 accelerate launch inference_sd.py \
     --checkpoint_path=$checkpoint_path \
     --output_path=$checkpoint_path \

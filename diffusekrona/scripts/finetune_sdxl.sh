@@ -1,4 +1,5 @@
 subjects="dog6" # Subject Name
+# dog6 subject images are available at dataset link provided in the README
 export MODEL_NAME="stabilityai/stable-diffusion-xl-base-1.0" # Model card
 export OUTPUT_DIR="../outputs/${subjects}" # Where to save the model
 export INSTANCE_DIR="../data/${subjects}/input/" # Where the input data is stored
