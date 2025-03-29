@@ -99,7 +99,6 @@ Generation Results on Anime Characters and Animal (Cat)
 </details>
 
 
-
 <details close>
 <summary><font size="4">
 Generation Results on Car modifications and showcase 🚘
