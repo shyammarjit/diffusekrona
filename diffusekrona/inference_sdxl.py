@@ -1,8 +1,10 @@
+import diffusers
 from diffusers import DiffusionPipeline, StableDiffusionXLImg2ImgPipeline
-import torch, os
-
+import torch, os, argparse
+from load_attn_procs import load_attn_procs
 
 def generator(checkpoint_path, output_dir, prompt, seed=0):
+    diffusers.loaders.UNet2DConditionLoadersMixin.load_attn_procs = load_attn_procs
     # create the image folder
     image_dir = os.path.join(output_dir, 'images') 
     if(os.path.exists(image_dir)): pass
@@ -10,15 +12,9 @@ def generator(checkpoint_path, output_dir, prompt, seed=0):
 
     # load the SDXL model
     model_id = "stabilityai/stable-diffusion-xl-base-1.0"
-    pipe = DiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16, 
-        adapter_type="krona", # Added
-        attn_update_unet="kqvo", # Added
-    )
+    pipe = DiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
     pipe = pipe.to("cuda")
-    pipe.load_lora_weights(checkpoint_path, 
-        adapter_type="krona", 
-        attn_update_unet="kqvo",
-    )
+    pipe.load_lora_weights(checkpoint_path)
     refiner = StableDiffusionXLImg2ImgPipeline.from_pretrained(
         "stabilityai/stable-diffusion-xl-refiner-1.0", torch_dtype=torch.float16, use_safetensors=True, variant="fp16",
     )
@@ -33,7 +29,23 @@ def generator(checkpoint_path, output_dir, prompt, seed=0):
     print(f"Image generation completed.")
 
 
-prompt = "A sksdog6 op top of sofa" # prompt for the image generation
-checkpoint_path = "../outputs/dog6/krona_k64:8q64:8v64:8o64:8_sdxl_0.001/"
-output_path = checkpoint_path # where you want to save the generated images, it will generate a folder named images
-generator(checkpoint_path, output_path, prompt, seed=5) # generate the image
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--checkpoint_path", type=str, required=True, help="path to the checkpoint")
+    parser.add_argument("--output_path", type=str, required=True, help="path to the output folder")
+    parser.add_argument("--prompt", type=str, required=True, help="prompt for the image generation")
+    parser.add_argument("--seed", type=int, default=0, help="seed for the image generation")
+    parser.add_argument("--adapter_type", type=str, default="krona", help="adapter type")
+    parser.add_argument("--attn_update_unet", type=str, default="kqvo", help="attention update type")
+    args = parser.parse_args()
+
+    # make global variables
+    os.environ["attn_update_unet"] = args.attn_update_unet
+    os.environ["adapter_type"] = args.adapter_type
+
+    # run the generator
+    generator(args.checkpoint_path, args.output_path, args.prompt, args.seed)
+
+
+if __name__ == "__main__":
+    main()
