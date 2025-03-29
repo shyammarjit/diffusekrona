@@ -55,14 +55,14 @@ python format_datasets.py       # To format the dataset (NOT mandatory)
 2. Finetune diffusekrona using script file
 ```python
 cd diffusekrona/                                        # RUN inside diffusekrona folder
-CUDA_VISIBLE_DEVICES=$GPU_ID bash finetune_sdxl.sh      # Leveraging SDXL model
-CUDA_VISIBLE_DEVICES=$GPU_ID bash finetune_sd.sh        # Leveraging SDXL model
+CUDA_VISIBLE_DEVICES=$GPU_ID bash scripts/finetune_sdxl.sh      # Leveraging SDXL model
+CUDA_VISIBLE_DEVICES=$GPU_ID bash scripts/finetune_sd.sh        # Leveraging SDXL model
 ```
 
 3. Generate images from the finetuned weights (RUN inside diffusekrona folder)
 ```python
-CUDA_VISIBLE_DEVICES=$GPU_ID accelerate launch inference_sdxl.py    # Leveraging SDXL model
-CUDA_VISIBLE_DEVICES=$GPU_ID accelerate launch inference_sd.py      # Leveraging SD model
+CUDA_VISIBLE_DEVICES=$GPU_ID accelerate launch scripts/inference_sdxl.sh    # Leveraging SDXL model
+CUDA_VISIBLE_DEVICES=$GPU_ID accelerate launch scripts/inference_sd.sh      # Leveraging SD model
 ```
 
 > Note: Specify a single GPU index only (e.g., `CUDA_VISIBLE_DEVICES=0`) and avoid listing multiple IDs.
