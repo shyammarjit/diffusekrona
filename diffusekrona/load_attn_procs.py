@@ -1,3 +1,5 @@
+# Note: This file is a modified version of the original file from the diffusers library.
+
 import diffusers
 from typing import Callable, Dict, List, Optional, Union
 import torch
@@ -197,9 +199,6 @@ def load_attn_procs(self, pretrained_model_name_or_path_or_dict: Union[str, Dict
                 f"The `state_dict` has to be empty at this point but has the following keys \n\n {', '.join(state_dict.keys())}"
             )
         
-        # print(lora_grouped_dict.keys())
-        # exit()
-        
         for key, value_dict in lora_grouped_dict.items():
             attn_processor = self
             for sub_key in key.split("."):
@@ -243,17 +242,13 @@ def load_attn_procs(self, pretrained_model_name_or_path_or_dict: Union[str, Dict
             elif "lora_layer.down.weight" in value_dict:
                 if(adapter_type=="lora"): rank = value_dict["lora_layer.down.weight"].shape[0]
                 elif(adapter_type=="krona"):
-                    # raise ValueError("Currently not supported.")
                     rank_a2, rank_a1 = value_dict["lora_layer.down.weight"].shape # A
                     rank_b1, rank_b2 = value_dict[f"lora_layer.up.weight"].shape # B
-                    # print(rank_a1, rank_a2, rank_b1, rank_b2)
                     rank = (rank_a1, rank_a2)
                     hidden_size = rank_a1 * rank_b1 # in_features
                         
                 else: raise ValueError("Only LoRA and KronA supported.")
 
-                # print("2nd", key, value_dict.keys())
-                # exit()
                 if isinstance(attn_processor, LoRACompatibleConv):
                     in_features = attn_processor.in_channels
                     out_features = attn_processor.out_channels
@@ -307,9 +302,7 @@ def load_attn_procs(self, pretrained_model_name_or_path_or_dict: Union[str, Dict
                 if("q" in attn_update_unet): projection_ids_list.append("to_q")
                 if("v" in attn_update_unet): projection_ids_list.append("to_v")
                 if("o" in attn_update_unet): projection_ids_list.append("to_out")
-                # print("check")
-                # print(value_dict[list(value_dict.keys())[0]].shape)
-                # exit()
+
                 for projection_id in projection_ids_list:
 
                     # Added lora and KronA
@@ -319,11 +312,8 @@ def load_attn_procs(self, pretrained_model_name_or_path_or_dict: Union[str, Dict
                     elif(adapter_type=="krona"):
                         rank_a2, rank_a1 = value_dict[f"{projection_id}_lora.down.weight"].shape # A
                         rank_b1, rank_b2 = value_dict[f"{projection_id}_lora.up.weight"].shape # B
-                        # print(rank_a1, rank_a2, rank_b1, rank_b2)
                         rank = (rank_a1, rank_a2)
                         hidden_size = rank_a1 * rank_b1 # in_features
-                        # exit()
-                        # raise ValueError("Currently not supported.")
                     else: raise ValueError("Only LoRA and KronA are supported.")
 
                     rank_mapping.update({f"{projection_id}_lora.down.weight": rank})
@@ -398,13 +388,8 @@ def load_attn_procs(self, pretrained_model_name_or_path_or_dict: Union[str, Dict
                 if("o" in attn_update_unet): 
                     out_rank = rank_mapping.get("to_out_lora.down.weight")
                     hidden_size_ = hidden_size_mapping.get("to_out_lora.up.weight")
-                                
-                # print(k_rank, q_rank, v_rank, out_rank)
-                # exit()
-                # print(k_rank, q_rank, v_rank, out_rank, hidden_size, cross_attention_dim,
-                # hidden_size_mapping.get("to_q_lora.up.weight"), hidden_size_mapping.get("to_v_lora.up.weight"),
-                # hidden_size_mapping.get("to_out_lora.up.weight"))
-                # exit()
+                
+                
                 if attn_processor_class is not LoRAAttnAddedKVProcessor: # getting call
                     attn_processors[key] = attn_processor_class(
                         k_rank=k_rank if "k" in attn_update_unet else None, # added

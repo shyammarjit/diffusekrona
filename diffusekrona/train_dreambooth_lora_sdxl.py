@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# coding=utf-8
+# Note: This file is a modified version of the original file from the diffusers library.
+
 # Copyright 2023 The HuggingFace Inc. team. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
